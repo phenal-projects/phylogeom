@@ -7,7 +7,7 @@ from torch_geometric import nn as gnn
 class TreeSupport(nn.Module):
     def __init__(self, feat_in, hidden_features=10):
         """
-        A class for graph nodes classification. Contains two convolytion layers
+        A class for graph nodes classification. Contains two convolution layers
         :param feat_in: Number of features of one node
         :param hidden_features: Number of features between layers
         """

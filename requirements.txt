@@ -1,6 +1,8 @@
 scipy
 dendropy
 torch
+torch_geometric
 h5py
 numpy
 Biopython
+# needs raxml and fastml installed

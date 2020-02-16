@@ -571,6 +571,7 @@ def labeler(files, etalon_tree, tree_path=".", rebuild=False):
     :param rebuild: set it True, if you need to rebuild trees or build them from scratch
     :return: tensor with labels
     """
+    tree_path = osp.abspath(tree_path)  # raxml needs absolute paths
     if rebuild:
         calculator = TreeConstruction.DistanceCalculator('blosum62')
         dist_constructor = TreeConstruction.DistanceTreeConstructor()
@@ -592,7 +593,7 @@ def labeler(files, etalon_tree, tree_path=".", rebuild=False):
                 'newick'
             )
             raxml = RaxmlCommandline(
-                sequences=file,
+                sequences=osp.abspath(file),
                 model='PROTCATWAG',
                 name='{}.tre'.format(name),
                 threads=3,
