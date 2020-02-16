@@ -24,7 +24,7 @@ For every node in the given tree, we find the closest node in the target tree an
 
 Input trees of the model should contain features in the nodes. We have used max difference of the residue frequencies in groups of the 3-partition. It may be very hard to understand, so the formula should help. For i-th node and j-th pair of residuals feature value is:
 
-$x_{i,j} = max_{k\in Adjacent-to(i)}|freq(a_1,leafs-from-parent(k))-freq(a_2,leafs-from-parent(i))$
+<a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{200}&space;\fn_cm&space;\tiny&space;x_{i,j}&space;=&space;max_{k\in&space;Adjacent-to(i)}|freq(a_1,leafs-from-parent(k))-freq(a_2,leafs-from-parent(i))" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\dpi{200}&space;\fn_cm&space;\tiny&space;x_{i,j}&space;=&space;max_{k\in&space;Adjacent-to(i)}|freq(a_1,leafs-from-parent(k))-freq(a_2,leafs-from-parent(i))" title="\tiny x_{i,j} = max_{k\in Adjacent-to(i)}|freq(a_1,leafs-from-parent(k))-freq(a_2,leafs-from-parent(i))" /></a>
 
 #### Model and data
 
@@ -35,6 +35,6 @@ Our training dataset contained 3000 trees of fungi and 2800 trees of archaea. Su
 The training was performed with "reduce-on-plateau" learning rate scheduler.
 
 ## Reproduce me!
-First, you need data [source needed]. If you want to make your own dataset from alignments see graph_data comments.
+First, you need data \[source needed\]. If you want to make your own dataset from alignments see graph_data comments.
 The main file to run is notebooks/support_values.ipynb. 
 More sources, data, and running guide are coming soon!
