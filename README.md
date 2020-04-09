@@ -17,7 +17,7 @@ Geometric deep learning techniques allow us to learn directly on graph data, e.g
 
 #### What are we going to predict
 
-Every node, unless it's a leaf, splits a tree into three parts. So, to compare two nodes in different trees we use standard metric for k-partitions.
+Every node, unless it's a leaf, splits a tree into three parts. So, to compare two nodes in different trees we use standard metric for k-partitions from a [paper](https://doi.org/10.1016/j.dam.2010.09.002).
 For every node in the given tree, we find the closest node in the target tree and save the distance to use it as a label of the node.
 
 #### What are the features
