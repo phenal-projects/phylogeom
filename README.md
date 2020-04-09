@@ -41,4 +41,4 @@ More sources, data, and running guide are coming soon!
 
 ## Assessing whole trees
 
-A notebook `trees` contain a new model for tree assessment.
+A notebook `trees` contain a new model for tree assessment. It requires different data format, class `MAGraph` can construct the data from alignments, nwk trees and an etalon tree. 
