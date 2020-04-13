@@ -64,9 +64,9 @@ class PairData(Data):
         self.aln = aln
 
     def __inc__(self, key, value):
-        if key == 'edge_index_s':
+        if key == 'edge_index_1':
             return self.x_1.size(0)
-        if key == 'edge_index_t':
+        if key == 'edge_index_2':
             return self.x_2.size(0)
         else:
             return super(PairData, self).__inc__(key, value)
