@@ -54,22 +54,20 @@ def build_trees(alns, trees):
 
 
 class PairData(Data):
-    def __init__(self, edge_ind1, edge_ind2, x1, x2, y, lookup1, lookup2, aln):
+    def __init__(self, edge_ind1, edge_ind2, x1, x2, y, aln):
         super().__init__()
-        self.edge_ind1 = edge_ind1
-        self.edge_ind2 = edge_ind2
-        self.x1 = x1
-        self.x2 = x2
+        self.edge_index_1 = edge_ind1
+        self.edge_index_2 = edge_ind2
+        self.x_1 = x1
+        self.x_2 = x2
         self.y = y
-        self.lookup1 = lookup1
-        self.lookup2 = lookup2
         self.aln = aln
 
     def __inc__(self, key, value):
         if key == 'edge_index_s':
-            return self.x1.size(0)
+            return self.x_1.size(0)
         if key == 'edge_index_t':
-            return self.x2.size(0)
+            return self.x_2.size(0)
         else:
             return super(PairData, self).__inc__(key, value)
 
@@ -134,6 +132,7 @@ def process_trees(trees, etalon_tree, alignments, seq_to_tensor, tensor_length=6
                 }
             )
     data_list = list()
+    lookups = list()
     for aln in data_dict:
         for i, j in combinations(range(len(data_dict[aln])), 2):
             data_list.append(PairData(
@@ -142,9 +141,8 @@ def process_trees(trees, etalon_tree, alignments, seq_to_tensor, tensor_length=6
                 data_dict[aln][i]['x'],
                 data_dict[aln][j]['x'],
                 int(data_dict[aln][i]['y'] > data_dict[aln][j]['y']),
-                data_dict[aln][i]['lookup'],
-                data_dict[aln][j]['lookup'],
                 aln
             ))
+            lookups.append((data_dict[aln][i]['lookup'], data_dict[aln][j]['lookup']))
 
-    return data_list
+    return data_list, lookups
