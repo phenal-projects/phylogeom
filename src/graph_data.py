@@ -130,7 +130,13 @@ def multipartitions(tree):
     return representations
 
 
-def get_node_representation(multipart, seq_dict):
+def aaf_node_representation(multipart, seq_dict):
+    """
+    Computes node representation
+    :param multipart: Multipartition representation for given clade
+    :param seq_dict: dictionary z
+    :return: tensor with nodes representation
+    """
     res = torch.zeros(231)  # pooling max divergence
     if seq_dict is None:
         return res
@@ -156,9 +162,16 @@ def get_node_representation(multipart, seq_dict):
     return res
 
 
+def get_node_representation(multipart, seq_dict, method="aaf"):
+    if method == 'aaf':
+        return aaf_node_representation(multipart, seq_dict)
+    if method == 'aapf':
+        raise NotImplementedError()
+
+
 def to_coo(tree, target_tree, seq_dict):
     """
-    Transforms tree to graph coo format
+    Transforms tree to graph coo format and calculates "quality" of the nodes
     :param tree: Phylo tree to convert
     :param target_tree: Phylo tree with target tree (to evaluate clades)
     :param seq_dict: dict (name -> sequence for feature construction)

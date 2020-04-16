@@ -5,23 +5,31 @@ from torch_geometric import nn as gnn
 
 
 class TreeSupport(nn.Module):
-    def __init__(self, feat_in, hidden_features=10):
+    def __init__(self, feat_in, hidden_features=10, output_dim=1, dropout=0.1):
         """
-        A class for graph nodes classification. Contains two convolution layers
+        A class for graph nodes classification. Contains graph convolution layers
         :param feat_in: Number of features of one node
         :param hidden_features: Number of features between layers
+        :param dropout: dropout value (after each layer)
         """
         super(TreeSupport, self).__init__()
+        self.dropout = dropout
         self.conv1 = gnn.GINConv(
-            nn.Sequential(nn.Linear(feat_in, hidden_features), nn.Linear(hidden_features, hidden_features)),
+            nn.Sequential(nn.Linear(feat_in, hidden_features), nn.PReLU(), nn.Linear(hidden_features, hidden_features)),
             train_eps=True
         )
         self.conv2 = gnn.GINConv(
-            nn.Sequential(nn.Linear(hidden_features, max(hidden_features // 2, 1)),
+            nn.Sequential(nn.Linear(hidden_features, max(hidden_features // 2, 1)), nn.PReLU(),
                           nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1))),
             train_eps=True
         )
-        self.conv3 = gnn.SAGEConv(max(hidden_features // 2, 1), 1)
+        self.conv3 = gnn.GINConv(
+            nn.Sequential(nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1)), nn.PReLU(),
+                          nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1))),
+            train_eps=True
+        )
+        self.conv4 = gnn.SAGEConv(max(hidden_features // 2, 1), max(hidden_features // 2, 1))
+        self.conv5 = gnn.SAGEConv(max(hidden_features // 2, 1), output_dim)
 
     def forward(self, data):
         """
@@ -35,13 +43,46 @@ class TreeSupport(nn.Module):
         x, edge_index, edge_attr = data.x, data.edge_index, data.edge_attr.squeeze()
 
         x = self.conv1(x, edge_index)
-        x = func.relu(x)
-        x = func.dropout(x, training=self.training)
+        x = func.dropout(x, training=self.training, p=self.dropout)
         x = self.conv2(x, edge_index)
-        x = func.relu(x)
-        x = func.dropout(x, training=self.training)
-        x = self.conv3(x, edge_index, edge_attr)
+        x = func.dropout(x, training=self.training, p=self.dropout)
+        x = self.conv3(x, edge_index)
+        x = func.dropout(x, training=self.training, p=self.dropout)
+        x = self.conv4(x, edge_index, edge_attr)
+        x = func.dropout(x, training=self.training, p=self.dropout)
+        x = self.conv5(x, edge_index, edge_attr)
         return func.relu(x)
+
+
+class WholeTreeAssessor(nn.Module):
+    def __init__(self, feat_in, hidden_features=10, treesup_out=20, dropout=0.1):
+        """
+        A class for whole tree assessment. Contains two convolution layers
+        :param feat_in: Number of features of one node
+        :param hidden_features: Number of features between layers
+        """
+        super(WholeTreeAssessor, self).__init__()
+        self.tree_conv = TreeSupport(feat_in, hidden_features=hidden_features, output_dim=treesup_out, dropout=dropout)
+        self.gpl = gnn.GlobalAttention(
+            nn.Sequential(nn.Linear(treesup_out, treesup_out),
+                          nn.Linear(treesup_out, 1))
+        )
+        self.lin = nn.Sequential(nn.Linear(treesup_out, 1), nn.ReLU())
+
+    def forward(self, data):
+        """
+        Forward propagation
+        :param data:
+            x: (Nodes x Features)
+            edge_index: (2 x Edges)
+            edge_attr: (Edges x 1)
+            batch: batch indicator (Nodes)
+        :return: results of the model (Nodes x 1)
+        """
+        x = self.tree_conv(data)
+        x = self.gpl(x, data.batch)
+        # Batch x treesup_out
+        return self.lin(x)
 
 
 class _Encoder(nn.Module):
