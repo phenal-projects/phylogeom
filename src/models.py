@@ -43,16 +43,16 @@ class TreeSupport(nn.Module):
         """
         x, edge_index, edge_attr = data.x, data.edge_index, data.edge_attr.squeeze()
 
-        x = self.conv1(x, edge_index)
+        x = func.leaky_relu(self.conv1(x, edge_index))
         x = func.dropout(x, training=self.training, p=self.dropout)
-        x = self.conv2(x, edge_index)
+        x = func.leaky_relu(self.conv2(x, edge_index))
         x = func.dropout(x, training=self.training, p=self.dropout)
-        x = self.conv3(x, edge_index)
+        x = func.leaky_relu(self.conv3(x, edge_index))
         x = func.dropout(x, training=self.training, p=self.dropout)
-        x = self.conv4(x, edge_index, edge_attr)
+        x = func.leaky_relu(self.conv4(x, edge_index, edge_attr))
         x = func.dropout(x, training=self.training, p=self.dropout)
-        x = self.conv5(x, edge_index, edge_attr)
-        return func.relu(x)
+        x = func.leaky_relu(self.conv5(x, edge_index, edge_attr))
+        return func.leaky_relu(x)
 
 
 class WholeTreeAssessor(nn.Module):
