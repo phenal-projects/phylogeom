@@ -210,7 +210,7 @@ def to_coo(tree, target_tree, seq_dict):
     if not tree.rooted:
         coo = torch.cat((coo, coo[[1, 0]]), dim=1)
         lengths = torch.cat((lengths, lengths), dim=0)
-    return x, coo, lengths / torch.max(lengths), torch.pow(0.5, y), lookup
+    return x, coo, lengths / torch.max(lengths), y, lookup
 
 
 def fastml_asr(tree_file, aln_file, prefix='./'):
