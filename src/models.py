@@ -15,16 +15,17 @@ class TreeSupport(nn.Module):
         super(TreeSupport, self).__init__()
         self.dropout = dropout
         self.conv1 = gnn.GINConv(
-            nn.Sequential(nn.Linear(feat_in, hidden_features), nn.PReLU(), nn.Linear(hidden_features, hidden_features)),
+            nn.Sequential(nn.Linear(feat_in, hidden_features), nn.LeakyReLU(),
+                          nn.Linear(hidden_features, hidden_features)),
             train_eps=True
         )
         self.conv2 = gnn.GINConv(
-            nn.Sequential(nn.Linear(hidden_features, max(hidden_features // 2, 1)), nn.PReLU(),
+            nn.Sequential(nn.Linear(hidden_features, max(hidden_features // 2, 1)), nn.LeakyReLU(),
                           nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1))),
             train_eps=True
         )
         self.conv3 = gnn.GINConv(
-            nn.Sequential(nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1)), nn.PReLU(),
+            nn.Sequential(nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1)), nn.LeakyReLU(),
                           nn.Linear(max(hidden_features // 2, 1), max(hidden_features // 2, 1))),
             train_eps=True
         )

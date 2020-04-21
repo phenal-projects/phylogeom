@@ -4,5 +4,7 @@ torch
 torch_geometric
 h5py
 numpy
+pandas
+matplotlib
 Biopython
 # needs raxml and fastml installed
