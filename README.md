@@ -35,7 +35,7 @@ Our training dataset contained 3000 trees of fungi and 2800 trees of archaea. Su
 The training was performed with "reduce-on-plateau" learning rate scheduler.
 
 ## Reproduce me!
-First, you need some data. Our model using [phylobench](http://mouse.belozersky.msu.ru/phylobench/) If you want to make your own dataset from alignments see graph_data comments.
+First, you need some data. Our model is using [phylobench](http://mouse.belozersky.msu.ru/phylobench/). If you want to make your own dataset from alignments see graph_data comments.
 The main file to run is notebooks/support_values.ipynb. 
 More sources, data, and running guide are coming soon!
 
