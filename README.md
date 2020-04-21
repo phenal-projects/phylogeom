@@ -36,7 +36,7 @@ The training was performed with "reduce-on-plateau" learning rate scheduler.
 
 ## Reproduce me!
 First, you need some data. Our model is using [phylobench](http://mouse.belozersky.msu.ru/phylobench/). If you want to make your own dataset from alignments see graph_data comments.
-The main file to run is notebooks/support_values.ipynb. 
+The main file to run is `notebooks/support_values.ipynb`. `notebooks/data_fetcher.ipynb` can build new datasets with pre-built trees.
 More sources, data, and running guide are coming soon!
 
 ## Assessing whole trees
