@@ -130,6 +130,38 @@ def multipartitions(tree):
     return representations
 
 
+def pw_node_representation(multipart, seq_dict, seq_len):
+    """
+    Computes node representation in PSSM fashion
+    :param multipart: Multipartition representation for given clade
+    :param seq_dict: dictionary z
+    :param seq_len: length of the sequences
+    :return: tensor with nodes representation
+    """
+    res = torch.zeros(231)  # pooling max divergence
+    if seq_dict is None:
+        return res
+    freqs = list()
+    for st in multipart.parts:
+        freqs.append(Counter())
+        for i in range(seq_len):
+            freqs[-1] += Counter(combinations([seq_dict[sq][i] for sq in st if sq in seq_dict], r=2))
+    res_pos = 0
+    for aapair in combinations(res_to_index.keys(), 2):
+        for grpair in combinations(range(len(multipart)), 2):
+            na = sum(freqs[grpair[0]].values())
+            nb = sum(freqs[grpair[1]].values())
+            # print(na, nb)
+            aapair_a = aapair if freqs[grpair[0]][aapair] != 0 else (aapair[1], aapair[0])
+            aapair_b = aapair if freqs[grpair[1]][aapair] != 0 else (aapair[1], aapair[0])
+            if na * nb != 0:
+                sr = abs(float(freqs[grpair[0]][aapair_a]) / na - float(freqs[grpair[1]][aapair_b]) / nb)
+                if res[res_pos] < sr:
+                    res[res_pos] = sr
+        res_pos += 1
+    return res
+
+
 def aaf_node_representation(multipart, seq_dict):
     """
     Computes node representation
@@ -162,11 +194,11 @@ def aaf_node_representation(multipart, seq_dict):
     return res
 
 
-def get_node_representation(multipart, seq_dict, method="aaf"):
+def get_node_representation(multipart, seq_dict, method="pw"):
     if method == 'aaf':
         return aaf_node_representation(multipart, seq_dict)
-    if method == 'aapf':
-        raise NotImplementedError()
+    if method == 'pw':
+        return pw_node_representation(multipart, seq_dict, len(next(iter(seq_dict.values()))))
 
 
 def to_coo(tree, target_tree, seq_dict):
@@ -210,6 +242,8 @@ def to_coo(tree, target_tree, seq_dict):
     if not tree.rooted:
         coo = torch.cat((coo, coo[[1, 0]]), dim=1)
         lengths = torch.cat((lengths, lengths), dim=0)
+    if len(lengths) == 0:
+        lengths = torch.ones((coo.shape[1], 1))
     return x, coo, lengths / torch.max(lengths), y, lookup
 
 
@@ -295,7 +329,7 @@ class Trees(InMemoryDataset):
             features, ei, el, y, lud = to_coo(tree, self.target_tree, seq_dict)
             self.seqs.append((aln, lud))  # stores sequences of the corresponding Data objects
 
-            data_list.append(Data(x=features, edge_index=ei, edge_attr=el, y=y))
+            data_list.append(Data(x=features, edge_index=ei, edge_attr=el, y=y, filename=file))
 
         if self.pre_filter is not None:
             data_list = [data for data in data_list if self.pre_filter(data)]

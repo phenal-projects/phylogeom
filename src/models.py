@@ -52,7 +52,7 @@ class TreeSupport(nn.Module):
         x = func.leaky_relu(self.conv4(x, edge_index, edge_attr))
         x = func.dropout(x, training=self.training, p=self.dropout)
         x = func.leaky_relu(self.conv5(x, edge_index, edge_attr))
-        return func.leaky_relu(x)
+        return func.sigmoid(x)
 
 
 class WholeTreeAssessor(nn.Module):
